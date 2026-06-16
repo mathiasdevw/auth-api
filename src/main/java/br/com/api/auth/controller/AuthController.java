@@ -1,5 +1,7 @@
 package br.com.api.auth.controller;
 
+import br.com.api.auth.dto.LoginRequestDTO;
+import br.com.api.auth.dto.LoginResponseDTO;
 import br.com.api.auth.dto.RegisterRequestDTO;
 import br.com.api.auth.dto.RegisterResponseDTO;
 import br.com.api.auth.service.AuthService;
@@ -28,5 +30,12 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(
+            @RequestBody @Valid LoginRequestDTO request
+    ) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }

@@ -1,9 +1,12 @@
 package br.com.api.auth.service;
 
+import br.com.api.auth.dto.LoginRequestDTO;
+import br.com.api.auth.dto.LoginResponseDTO;
 import br.com.api.auth.dto.RegisterRequestDTO;
 import br.com.api.auth.dto.RegisterResponseDTO;
 import br.com.api.auth.entity.User;
 import br.com.api.auth.exception.EmailAlreadyExistsException;
+import br.com.api.auth.exception.InvalidCredentialsException;
 import br.com.api.auth.repository.RoleRepository;
 import br.com.api.auth.repository.UserRepository;
 
@@ -16,15 +19,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository,
+                       RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public LoginResponseDTO login(LoginRequestDTO request) {
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException();
+        }
+
+        return new LoginResponseDTO(
+                "Login realizado com sucesso",
+                user.getName(),
+                user.getEmail(),
+                user.getRole().getName()
+        );
     }
 
     @Transactional
