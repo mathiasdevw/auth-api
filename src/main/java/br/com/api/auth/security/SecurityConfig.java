@@ -1,4 +1,4 @@
-package br.com.api.auth.config;
+package br.com.api.auth.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
